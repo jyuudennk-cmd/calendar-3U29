@@ -1,8 +1,7 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-   <meta charset="UTF-8">
+  <meta charset="UTF-8">
   <title>予定登録</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -16,13 +15,15 @@
   </script>
 </head>
 
-
 <body>
+
+<p>カレンダー登録画面を開いています…</p>
+
 <script>
   // ===== 1. 今日 =====
   const today = new Date();
 
-  // ===== 2. 今月の1日を基準にする =====
+  // ===== 2. 今月の1日を基準 =====
   const base = new Date(
     today.getFullYear(),
     today.getMonth(),
@@ -30,6 +31,7 @@
   );
 
   // ===== 3. 3か月後の月初 =====
+  // ※「3か月目（終了月）」＝ 当月を1として +2
   const target = new Date(
     base.getFullYear(),
     base.getMonth() + 2,
@@ -40,7 +42,7 @@
   const m = String(target.getMonth() + 1).padStart(2, '0');
   const d = '01';
 
-  // 終日イベント用（翌日を終了日に）
+  // 終日イベント
   const startDate = `${y}${m}${d}`;
 
   const nextDay = new Date(target);
@@ -54,9 +56,15 @@
   // ===== 4. iOS判定 =====
   const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
 
-  if (isIOS) {
-    // ===== 5. iOS（ICS） =====
-    const ics =
+  // ★ GA4に page_view を明示送信
+  gtag('event', 'page_view');
+
+  // ★ 500ms待ってからリダイレクト
+  setTimeout(() => {
+
+    if (isIOS) {
+      // ===== 5. iOS（ICS） =====
+      const ics =
 `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//QR Calendar//JP
@@ -64,30 +72,27 @@ BEGIN:VEVENT
 DTSTART;VALUE=DATE:${startDate}
 DTEND;VALUE=DATE:${endDate}
 SUMMARY:【イオンモバイル】docomoU29学割 割引3か月目(終了月)のご連絡
-DESCRIPTION:現在、割引適用開始より3か月目です。料金プランの変更の際は今月中にイオンモバイルへご相談ください。プラン変更がない場合、来月ご利用分から割引終了後の料金となります。お近くのイオンモバイルはこちらhttps://aeonmobile.jp/shoplist/
+DESCRIPTION:現在、割引適用開始より3か月目です。料金プランの変更の際は今月中にイオンモバイルへご相談ください。プラン変更がない場合、来月ご利用分から割引終了後の料金となります。お近くのイオンモバイルはこちら https://aeonmobile.jp/shoplist/
 END:VEVENT
 END:VCALENDAR`;
 
-    const blob = new Blob([ics], { type: 'text/calendar' });
-    const url = URL.createObjectURL(blob);
-    location.href = url;
+      const blob = new Blob([ics], { type: 'text/calendar' });
+      const url = URL.createObjectURL(blob);
+      location.href = url;
 
-  } else {
-    // ===== 6. Googleカレンダー =====
-    const calendarUrl =
-      "https://calendar.google.com/calendar/render?action=TEMPLATE" +
-      "&text=【イオンモバイル】docomoU29学割 割引3か月目(終了月)のご連絡" +
-      `&dates=${startDate}/${endDate}` +
-      "&details=現在、割引適用開始より3か月目です。料金プランの変更の際は今月中にイオンモバイルへご相談ください。プラン変更がない場合、来月ご利用分から割引終了後の料金となります。お近くのイオンモバイルはこちらhttps://aeonmobile.jp/shoplist/";
+    } else {
+      // ===== 6. Googleカレンダー =====
+      const calendarUrl =
+        "https://calendar.google.com/calendar/render?action=TEMPLATE" +
+        "&text=【イオンモバイル】docomoU29学割 割引3か月目(終了月)のご連絡" +
+        `&dates=${startDate}/${endDate}` +
+        "&details=現在、割引適用開始より3か月目です。料金プランの変更の際は今月中にイオンモバイルへご相談ください。プラン変更がない場合、来月ご利用分から割引終了後の料金となります。お近くのイオンモバイルはこちら https://aeonmobile.jp/shoplist/";
 
-    location.href = calendarUrl;
-  }
+      location.href = calendarUrl;
+    }
+
+  }, 500); // ← GA計測安定用
 </script>
 
-<p>カレンダー登録画面を開いています…</p>
 </body>
-
 </html>
-
-
-
